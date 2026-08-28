@@ -2,22 +2,18 @@ name: Ping platform verdict
 
 on:
   schedule:
-    # Backup if the self-chain stops. Public cron is still delayed overnight.
     - cron: "*/5 * * * *"
     - cron: "2-59/5 * * * *"
   workflow_dispatch:
-  workflow_run:
-    workflows: ["Wait platform verdict"]
-    types: [completed]
 
 concurrency:
   group: ping-platform-verdict
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   ping:
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 8
     steps:
       - name: Dispatch run-platform-verdict
         env:
@@ -35,3 +31,11 @@ jobs:
             https://api.github.com/repos/laurenbarer49/jira-bolt-automation/dispatches \
             -d '{"event_type":"run-platform-verdict"}'
           echo "Dispatched run-platform-verdict"
+      - name: Wait 4 minutes then re-queue
+        env:
+          GH_TOKEN: ${{ secrets.DISPATCH_TOKEN }}
+        run: |
+          set -euo pipefail
+          sleep 240
+          gh workflow run "Ping platform verdict" --repo laurenbarer49/jira-bolt-cron
+          echo "Re-queued Ping platform verdict"

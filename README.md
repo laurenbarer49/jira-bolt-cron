@@ -1,7 +1,7 @@
 # jira-bolt-cron
 
-Public GitHub Actions cron that pings the private [jira-bolt-automation](https://github.com/laurenbarer49/jira-bolt-automation) repo.
+Public GitHub Actions that pings the private [jira-bolt-automation](https://github.com/laurenbarer49/jira-bolt-automation) repo.
 
-Private-repo `schedule:` events are delayed for hours. Public-repo cron is close enough to wall-clock that platform verdict, SM/app/web, and the board summary actually run.
+GitHub `schedule:` cron is delayed for hours. After each ping this workflow sleeps on the public repo (free minutes) and starts the next ping with a token, so it does not depend on cron. `schedule:` stays as a backup if a chain dies.
 
-This repo has **no Jira credentials**. The only secret is `DISPATCH_TOKEN`, a GitHub token that can POST `repository_dispatch` to `jira-bolt-automation`.
+This repo has **no Jira credentials**. The only secret is `DISPATCH_TOKEN`.

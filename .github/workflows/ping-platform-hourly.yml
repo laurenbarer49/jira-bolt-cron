@@ -4,18 +4,15 @@ on:
   schedule:
     - cron: "8 * * * *"
   workflow_dispatch:
-  workflow_run:
-    workflows: ["Wait platform hourly summary"]
-    types: [completed]
 
 concurrency:
   group: ping-platform-hourly
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   ping:
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 60
     steps:
       - name: Dispatch run-platform-hourly
         env:
@@ -33,3 +30,11 @@ jobs:
             https://api.github.com/repos/laurenbarer49/jira-bolt-automation/dispatches \
             -d '{"event_type":"run-platform-hourly"}'
           echo "Dispatched run-platform-hourly"
+      - name: Wait 55 minutes then re-queue
+        env:
+          GH_TOKEN: ${{ secrets.DISPATCH_TOKEN }}
+        run: |
+          set -euo pipefail
+          sleep 3300
+          gh workflow run "Ping platform hourly summary" --repo laurenbarer49/jira-bolt-cron
+          echo "Re-queued Ping platform hourly summary"
