@@ -4,6 +4,9 @@ on:
   schedule:
     - cron: "8 * * * *"
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Wait platform hourly summary"]
+    types: [completed]
 
 concurrency:
   group: ping-platform-hourly

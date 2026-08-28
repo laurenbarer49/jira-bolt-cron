@@ -5,6 +5,9 @@ on:
     - cron: "*/30 * * * *"
     - cron: "10,40 * * * *"
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Wait ticket workflows"]
+    types: [completed]
 
 concurrency:
   group: ping-ticket-workflows
